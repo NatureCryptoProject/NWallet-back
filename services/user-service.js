@@ -71,7 +71,7 @@ class UserService {
     };
   }
 
-  async getAllUsers() {
+  async getUsers() {
     const users = await UserModel.find();
     return users;
   }

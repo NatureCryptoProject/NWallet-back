@@ -69,9 +69,9 @@ class UserController {
       next(error);
     }
   }
-  async getUsers(req, res, next) {
+  async getWallets(req, res, next) {
     try {
-      const users = await userService.getAllUsers();
+      const users = await userService.getWallets();
       res.json(users);
     } catch (error) {
       next(error);

@@ -1,5 +1,6 @@
 const Router = require("express").Router;
 const userController = require("../controllers/user-controller");
+const WalletController = require("../controllers/wallet-controller");
 const { body, oneOf, check } = require("express-validator");
 const authMiddlware = require("../middlwares/auth-middleware");
 
@@ -22,6 +23,8 @@ router.post("/registration", validation, userController.registration);
 router.post("/login", userController.login);
 router.post("/logout", userController.logout);
 router.get("/refresh", userController.refresh);
-router.get("/users", authMiddlware, userController.getUsers);
+
+router.post("/wallets", authMiddlware, WalletController.addWallet);
+router.get("/wallets", authMiddlware, WalletController.getAllWallets);
 
 module.exports = router;
