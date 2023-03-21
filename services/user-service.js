@@ -11,7 +11,10 @@ class UserService {
       throw ApiError.BadRequest(`User with name ${userName} is already exists`);
     }
     const hashPassword = await bcrypt.hash(password, 3);
-    const user = await UserModel.create({ userName, password: hashPassword });
+    const user = await UserModel.create({
+      userName,
+      password: hashPassword,
+    });
     const userDto = new UserDto(user); // name, id
     const tokens = tokenService.generateTokens({ ...userDto });
 

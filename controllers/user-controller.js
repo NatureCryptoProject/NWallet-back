@@ -1,6 +1,7 @@
 const userService = require("../services/user-service");
 const { validationResult } = require("express-validator");
 const ApiError = require("../exceptions/api-error");
+const sha3_256 = require("js-sha3").sha3_256;
 
 class UserController {
   async registration(req, res, next) {
@@ -11,6 +12,7 @@ class UserController {
       }
       const { userName, password } = req.body;
       const userData = await userService.registration(userName, password);
+      const hashPayPsw = sha3_256(password);
 
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -18,6 +20,8 @@ class UserController {
         // secure: true,
       });
 
+      userData["payPsw"] = hashPayPsw;
+      console.log(userData);
       return res.json(userData);
     } catch (error) {
       next(error);
