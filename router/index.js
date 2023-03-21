@@ -26,5 +26,11 @@ router.get("/refresh", userController.refresh);
 
 router.post("/wallets", authMiddlware, WalletController.addWallet);
 router.get("/wallets", authMiddlware, WalletController.getAllWallets);
+router.patch("/wallets", authMiddlware, WalletController.updateWallet);
+router.patch(
+  "/wallets/send-transaction",
+  authMiddlware,
+  WalletController.sendTransaction
+);
 
 module.exports = router;
