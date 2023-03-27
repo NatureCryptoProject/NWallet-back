@@ -20,8 +20,13 @@ class UserController {
         // secure: true,
       });
 
+      res.cookie("payPsw", hashPayPsw, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        // secure: true,
+      });
+
       userData["payPsw"] = hashPayPsw;
-      console.log(userData);
       return res.json(userData);
     } catch (error) {
       next(error);
@@ -32,13 +37,20 @@ class UserController {
     try {
       const { userName, password } = req.body;
       const userData = await userService.login(userName, password);
+      const hashPayPsw = sha3_256(password);
 
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         // secure: true,
       });
+      res.cookie("payPsw", hashPayPsw, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        // secure: true,
+      });
 
+      userData["payPsw"] = hashPayPsw;
       return res.json(userData);
     } catch (error) {
       next(error);
@@ -50,6 +62,7 @@ class UserController {
       const { refreshToken } = req.cookies;
       const token = await userService.logout(refreshToken);
       res.clearCookie("refreshToken");
+      res.clearCookie("payPsw");
       return res.json(token);
     } catch (error) {
       next(error);
@@ -58,7 +71,7 @@ class UserController {
 
   async refresh(req, res, next) {
     try {
-      const { refreshToken } = req.cookies;
+      const { refreshToken, payPsw } = req.cookies;
 
       const userData = await userService.refresh(refreshToken);
 
@@ -67,7 +80,13 @@ class UserController {
         httpOnly: true,
         // secure: true,
       });
+      res.cookie("payPsw", payPsw, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        // secure: true,
+      });
 
+      userData["payPsw"] = payPsw;
       return res.json(userData);
     } catch (error) {
       next(error);

@@ -3,6 +3,8 @@ const userController = require("../controllers/user-controller");
 const WalletController = require("../controllers/wallet-controller");
 const { body, oneOf, check } = require("express-validator");
 const authMiddlware = require("../middlwares/auth-middleware");
+const payPassmiddleware = require("../middlwares/payPass-middleware");
+const walletController = require("../controllers/wallet-controller");
 
 const router = new Router();
 
@@ -26,11 +28,22 @@ router.get("/refresh", userController.refresh);
 
 router.post("/wallets", authMiddlware, WalletController.addWallet);
 router.get("/wallets", authMiddlware, WalletController.getAllWallets);
+router.get(
+  "/wallets/transactions",
+  authMiddlware,
+  walletController.getWalletsTransactions
+);
 router.patch("/wallets", authMiddlware, WalletController.updateWallet);
 router.patch(
   "/wallets/send-transaction",
+  // payPassmiddleware,
   authMiddlware,
   WalletController.sendTransaction
+);
+router.get(
+  "/wallets/get-fee",
+  // authMiddlware,
+  WalletController.getFee
 );
 
 module.exports = router;

@@ -1,25 +1,20 @@
 const walletService = require("../services/wallet-service");
+const { Crypto } = require("../modules/Nature/utils.js");
+const AES = require("crypto-js/aes");
 
 class WalletController {
   async addWallet(req, res, next) {
     try {
       const { id: owner } = req.user;
-      const {
-        walletName,
-        walletAdress,
-        walletPassword,
-        mnemonic,
-        amount,
-        transactions,
-      } = req.body;
+      const { mnemonic } = req.body;
+      const { payPsw } = req.cookies;
 
+      const encMnem = AES.encrypt(mnemonic, payPsw).toString();
+
+      const NewwalletAdress = Crypto.generateKeypair(mnemonic).publicKey;
       const newWallet = await walletService.addWallet(
-        walletName,
-        walletAdress,
-        walletPassword,
-        mnemonic,
-        amount,
-        transactions,
+        NewwalletAdress,
+        encMnem,
         owner
       );
 
@@ -39,6 +34,18 @@ class WalletController {
     }
   }
 
+  async getWalletsTransactions(req, res, next) {
+    try {
+      const { walletAdress } = req.body;
+      const transactions = await walletService.getWalletsTransactions(
+        walletAdress
+      );
+      return res.json(transactions);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updateWallet(req, res, next) {
     try {
       // const { id: owner } = req.user;
@@ -52,13 +59,26 @@ class WalletController {
 
   async sendTransaction(req, res, next) {
     try {
-      const { _id, transactionAdress, transactionAmount } = req.body;
+      const { senderPublicKey, transactionAdress, transactionAmount, message } =
+        req.body;
+      const payPass = req.cookies.payPsw;
       const transaction = await walletService.sendTransaction(
-        _id,
+        senderPublicKey,
         transactionAdress,
-        transactionAmount
+        transactionAmount,
+        message,
+        payPass
       );
       return res.json(transaction);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getFee(req, res, next) {
+    try {
+      // const { _id, transactionAdress, transactionAmount } = req.body;
+      const fee = await walletService.getFee();
+      return res.json(fee);
     } catch (error) {
       next(error);
     }

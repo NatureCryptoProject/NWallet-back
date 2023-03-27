@@ -1,23 +1,19 @@
 const WalletModel = require("../models/wallet-model");
+const UserModel = require("../models/user-model");
+const { Nature, Crypto } = require("../modules/Nature/utils.js");
+const CryptoJS = require("crypto-js");
+const serverIP = process.env.serverIP;
+
+let nature = new Nature(serverIP, "27777");
 
 class WalletService {
-  async addWallet(
-    walletName,
-    walletAdress,
-    walletPassword,
-    mnemonic,
-    amount,
-    transactions,
-    owner
-  ) {
+  async addWallet(walletAdress, mnemonic, owner) {
+    const amount = await nature.getBalance(walletAdress);
     const wallet = await WalletModel.create({
-      walletName,
       walletAdress,
-      walletPassword,
       mnemonic,
-      amount,
-      transactions,
       owner,
+      amount,
     });
     return wallet;
   }
@@ -26,7 +22,25 @@ class WalletService {
     const AllWallets = await WalletModel.find({
       owner,
     });
-    return AllWallets;
+
+    const actualizedWallets = await Promise.all(
+      AllWallets.map(async (el) => {
+        const amount = await nature.getBalance(el.walletAdress);
+        const _id = el._id;
+        const updatedWallet = await WalletModel.findByIdAndUpdate(
+          { _id },
+          { $set: { amount: amount } }
+        );
+
+        return updatedWallet;
+      })
+    );
+    return actualizedWallets;
+  }
+
+  async getWalletsTransactions(adress) {
+    const transactions = await nature.getTransactions(adress, 0, 10);
+    return transactions;
   }
 
   async updateWallet(_id, walletName) {
@@ -37,56 +51,33 @@ class WalletService {
     return NewWallet;
   }
 
-  async sendTransaction(_id, transactionAdress, transactionAmount) {
-    const fromWallet = await WalletModel.findById({ _id });
-    const toWallet = await WalletModel.findOne({
-      walletAdress: transactionAdress,
+  async sendTransaction(
+    senderPublicKey,
+    transactionAdress,
+    amount,
+    message = null,
+    payPass
+  ) {
+    const { mnemonic } = await WalletModel.findOne({
+      walletAdress: senderPublicKey,
     });
-    if (toWallet === null) {
-      console.log("Wrong Adress, wallet does not exist");
-      return;
-    } else if (transactionAmount <= 0) {
-      console.log("Wrong amount, must be more then 0");
-      return;
-    } else if (transactionAmount > fromWallet.amount) {
-      console.log("Not enough NATURE");
-      return;
-    }
-    const newFromWalletAmount = fromWallet.amount - transactionAmount;
-    const newToWalletAmount = toWallet.amount + transactionAmount;
-    await WalletModel.findByIdAndUpdate(
-      { _id },
-      {
-        $set: {
-          amount: newFromWalletAmount,
-          transactions: [
-            ...fromWallet.transactions,
-            {
-              transactionAmount: `-${transactionAmount}`,
-              transactionAdress,
-              date: Date.now(),
-            },
-          ],
-        },
-      }
-    );
 
-    await WalletModel.findOneAndUpdate(
-      { walletAdress: transactionAdress },
-      {
-        $set: {
-          amount: newToWalletAmount,
-          transactions: [
-            ...toWallet.transactions,
-            {
-              transactionAmount: transactionAmount,
-              transactionAdress: fromWallet.walletAdress,
-              date: Date.now(),
-            },
-          ],
-        },
-      }
+    const bytes = CryptoJS.AES.decrypt(mnemonic, payPass);
+    const decrmnem = bytes.toString(CryptoJS.enc.Utf8);
+    const senderPrivateKey = Crypto.generateKeypair(decrmnem).privateKey;
+    const transaction = await nature.sendTransaction(
+      senderPublicKey,
+      senderPrivateKey,
+      transactionAdress,
+      amount,
+      message
     );
+    console.log(transaction);
+    return transaction;
+  }
+  async getFee() {
+    const fee = await nature.fee();
+    return fee;
   }
 }
 

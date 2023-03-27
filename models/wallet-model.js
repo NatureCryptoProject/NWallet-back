@@ -9,9 +9,6 @@ const WalletSchema = new Schema(
     walletAdress: {
       type: String,
     },
-    walletPassword: {
-      type: String,
-    },
     mnemonic: {
       type: String,
     },
@@ -19,19 +16,6 @@ const WalletSchema = new Schema(
       type: Number,
       default: 0,
     },
-    transactions: [
-      {
-        transactionAdress: {
-          type: String,
-        },
-        transactionAmount: {
-          type: Number,
-        },
-        date: {
-          type: String,
-        },
-      },
-    ],
     owner: {
       type: Schema.Types.ObjectId,
       ref: "users",
