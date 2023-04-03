@@ -36,10 +36,8 @@ class WalletController {
 
   async getWalletsTransactions(req, res, next) {
     try {
-      const { walletAdress } = req.body;
-      const transactions = await walletService.getWalletsTransactions(
-        walletAdress
-      );
+      const { adress } = req.body;
+      const transactions = await walletService.getWalletsTransactions(adress);
       return res.json(transactions);
     } catch (error) {
       next(error);

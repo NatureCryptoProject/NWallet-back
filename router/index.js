@@ -28,7 +28,7 @@ router.get("/refresh", userController.refresh);
 
 router.post("/wallets", authMiddlware, WalletController.addWallet);
 router.get("/wallets", authMiddlware, WalletController.getAllWallets);
-router.get(
+router.post(
   "/wallets/transactions",
   authMiddlware,
   walletController.getWalletsTransactions
