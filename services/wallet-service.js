@@ -87,9 +87,14 @@ class WalletService {
         return updatedWallet;
       })
     );
+    // console.log(transaction.code);
+    // if (transaction.code) {
+    //   return transaction.code;
+    // }
 
     return transaction;
   }
+
   async getFee() {
     const fee = await nature.fee();
     return fee;

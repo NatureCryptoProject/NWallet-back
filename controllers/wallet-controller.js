@@ -1,6 +1,7 @@
 const walletService = require("../services/wallet-service");
 const { Crypto } = require("../modules/Nature/utils.js");
 const AES = require("crypto-js/aes");
+const ApiError = require("../exceptions/api-error");
 
 class WalletController {
   async addWallet(req, res, next) {
@@ -71,6 +72,10 @@ class WalletController {
       );
       return res.json(transaction);
     } catch (error) {
+      if (error.message === "Invalid address format!" || "Insufficient funds") {
+        next(ApiError.BadRequest(`Rejected ${error.message}`));
+      }
+
       next(error);
     }
   }
