@@ -60,12 +60,14 @@ class WalletController {
       const { senderPublicKey, transactionAdress, transactionAmount, message } =
         req.body;
       const payPass = req.cookies.payPsw;
+      const { id: owner } = req.user;
       const transaction = await walletService.sendTransaction(
         senderPublicKey,
         transactionAdress,
         transactionAmount,
         message,
-        payPass
+        payPass,
+        owner
       );
       return res.json(transaction);
     } catch (error) {

@@ -22,7 +22,6 @@ class WalletService {
     const AllWallets = await WalletModel.find({
       owner,
     });
-
     const actualizedWallets = await Promise.all(
       AllWallets.map(async (el) => {
         const amount = await nature.getBalance(el.walletAdress);
@@ -31,10 +30,11 @@ class WalletService {
           { _id },
           { $set: { amount: amount } }
         );
-
         return updatedWallet;
       })
     );
+    // console.log(actualizedWallets);
+
     return actualizedWallets;
   }
 
@@ -56,7 +56,8 @@ class WalletService {
     transactionAdress,
     amount,
     message = null,
-    payPass
+    payPass,
+    owner
   ) {
     const { mnemonic } = await WalletModel.findOne({
       walletAdress: senderPublicKey,
@@ -72,7 +73,21 @@ class WalletService {
       amount,
       message
     );
-    console.log(transaction);
+    const AllWallets = await WalletModel.find({
+      owner,
+    });
+    await Promise.all(
+      AllWallets.map(async (el) => {
+        const amount = await nature.getBalance(el.walletAdress);
+        const _id = el._id;
+        const updatedWallet = await WalletModel.findByIdAndUpdate(
+          { _id },
+          { $set: { amount: amount } }
+        );
+        return updatedWallet;
+      })
+    );
+
     return transaction;
   }
   async getFee() {
