@@ -62,6 +62,9 @@ class WalletController {
         req.body;
       const payPass = req.cookies.payPsw;
       const { id: owner } = req.user;
+      if (transactionAmount <= 0) {
+        return;
+      }
       const transaction = await walletService.sendTransaction(
         senderPublicKey,
         transactionAdress,
