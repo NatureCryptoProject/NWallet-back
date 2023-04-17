@@ -35,6 +35,16 @@ class WalletController {
     }
   }
 
+  async deleteWallet(req, res, next) {
+    try {
+      const { id } = req.body;
+      const deletedWallet = await walletService.getWalletsTransactions(id);
+      return res.json(deletedWallet);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getWalletsTransactions(req, res, next) {
     try {
       const { adress } = req.body;

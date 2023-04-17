@@ -34,6 +34,7 @@ router.post(
   walletController.getWalletsTransactions
 );
 router.patch("/wallets", authMiddlware, WalletController.updateWallet);
+router.delete("wallets", authMiddlware, WalletController.deleteWallet);
 router.patch(
   "/wallets/send-transaction",
   // payPassmiddleware,

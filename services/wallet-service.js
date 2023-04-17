@@ -4,9 +4,8 @@ const { Nature, Crypto } = require("../modules/Nature/utils.js");
 const CryptoJS = require("crypto-js");
 const serverIP = process.env.serverIP;
 
-let nature = new Nature(serverIP, "27777");
-
 class WalletService {
+  nature = new Nature(serverIP, "27777");
   async addWallet(walletAdress, mnemonic, owner) {
     const amount = await nature.getBalance(walletAdress);
     const wallet = await WalletModel.create({
