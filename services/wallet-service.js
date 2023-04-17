@@ -3,12 +3,12 @@ const UserModel = require("../models/user-model");
 const { Nature, Crypto } = require("../modules/Nature/utils.js");
 const CryptoJS = require("crypto-js");
 const serverIP = process.env.serverIP;
-let nature = new Nature(serverIP, "27777");
+// let nature = new Nature(serverIP, "27777");
 
 class WalletService {
   nature = new Nature(serverIP, "27777");
   async addWallet(walletAdress, mnemonic, owner) {
-    const amount = await nature.getBalance(walletAdress);
+    const amount = await this.nature.getBalance(walletAdress);
     const wallet = await WalletModel.create({
       walletAdress,
       mnemonic,
@@ -24,7 +24,7 @@ class WalletService {
     });
     const actualizedWallets = await Promise.all(
       AllWallets.map(async (el) => {
-        const amount = await nature.getBalance(el.walletAdress);
+        const amount = await this.nature.getBalance(el.walletAdress);
         const _id = el._id;
         const updatedWallet = await WalletModel.findByIdAndUpdate(
           { _id },
@@ -39,7 +39,7 @@ class WalletService {
   }
 
   async getWalletsTransactions(adress) {
-    const transactions = await nature.getTransactions(adress, 0, 10);
+    const transactions = await this.nature.getTransactions(adress, 0, 10);
     return transactions;
   }
 
@@ -66,7 +66,7 @@ class WalletService {
     const bytes = CryptoJS.AES.decrypt(mnemonic, payPass);
     const decrmnem = bytes.toString(CryptoJS.enc.Utf8);
     const senderPrivateKey = Crypto.generateKeypair(decrmnem).privateKey;
-    const transaction = await nature.sendTransaction(
+    const transaction = await this.nature.sendTransaction(
       senderPublicKey,
       senderPrivateKey,
       transactionAdress,
@@ -78,7 +78,7 @@ class WalletService {
     });
     await Promise.all(
       AllWallets.map(async (el) => {
-        const amount = await nature.getBalance(el.walletAdress);
+        const amount = await this.nature.getBalance(el.walletAdress);
         const _id = el._id;
         const updatedWallet = await WalletModel.findByIdAndUpdate(
           { _id },
@@ -96,7 +96,7 @@ class WalletService {
   }
 
   async getFee() {
-    const fee = await nature.fee();
+    const fee = await this.nature.fee();
     return fee;
   }
 }
