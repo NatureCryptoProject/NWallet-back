@@ -38,7 +38,7 @@ class WalletController {
   async deleteWallet(req, res, next) {
     try {
       const { id } = req.body;
-      const deletedWallet = await walletService.getWalletsTransactions(id);
+      const deletedWallet = await walletService.getDeletedWallet(id);
       return res.json(deletedWallet);
     } catch (error) {
       next(error);
@@ -47,8 +47,12 @@ class WalletController {
 
   async getWalletsTransactions(req, res, next) {
     try {
-      const { adress } = req.body;
-      const transactions = await walletService.getWalletsTransactions(adress);
+      const { adress, offset, limit } = req.body;
+      const transactions = await walletService.getWalletsTransactions(
+        adress,
+        offset,
+        limit
+      );
       return res.json(transactions);
     } catch (error) {
       next(error);

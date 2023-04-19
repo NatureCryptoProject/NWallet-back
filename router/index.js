@@ -4,7 +4,7 @@ const WalletController = require("../controllers/wallet-controller");
 const { body, oneOf, check } = require("express-validator");
 const authMiddlware = require("../middlwares/auth-middleware");
 const payPassmiddleware = require("../middlwares/payPass-middleware");
-const walletController = require("../controllers/wallet-controller");
+// const walletController = require("../controllers/wallet-controller");
 
 const router = new Router();
 
@@ -31,10 +31,10 @@ router.get("/wallets", authMiddlware, WalletController.getAllWallets);
 router.post(
   "/wallets/transactions",
   authMiddlware,
-  walletController.getWalletsTransactions
+  WalletController.getWalletsTransactions
 );
 router.patch("/wallets", authMiddlware, WalletController.updateWallet);
-router.delete("wallets", authMiddlware, WalletController.deleteWallet);
+router.patch("/wallets/delete", authMiddlware, WalletController.deleteWallet);
 router.patch(
   "/wallets/send-transaction",
   // payPassmiddleware,

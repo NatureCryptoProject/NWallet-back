@@ -237,6 +237,11 @@ class Nature {
             params,
             id: this.requestId++
         };
+
+        if (this.requestId >= 10000) {
+            this.requestId = 1;
+        }
+
         return new Promise((resolve, reject) => {
             const client = new Net.Socket();
             client.connect({

@@ -2,6 +2,7 @@ const WalletModel = require("../models/wallet-model");
 const UserModel = require("../models/user-model");
 const { Nature, Crypto } = require("../modules/Nature/utils.js");
 const CryptoJS = require("crypto-js");
+
 const serverIP = process.env.serverIP;
 let nature = new Nature(serverIP, "27777");
 
@@ -15,6 +16,11 @@ class WalletService {
       amount,
     });
     return wallet;
+  }
+
+  async getDeletedWallet(id) {
+    const deletedWallet = await WalletModel.findByIdAndDelete(id);
+    return deletedWallet;
   }
 
   async getAllWallets(owner) {
@@ -37,8 +43,9 @@ class WalletService {
     return actualizedWallets;
   }
 
-  async getWalletsTransactions(adress) {
-    const transactions = await this.nature.getTransactions(adress, 0, 10);
+  async getWalletsTransactions(adress, offset, limit) {
+    // console.log(offset, limit);
+    const transactions = await nature.getTransactions(adress, offset, limit);
     return transactions;
   }
 
@@ -77,7 +84,7 @@ class WalletService {
     });
     await Promise.all(
       AllWallets.map(async (el) => {
-        const amount = await this.nature.getBalance(el.walletAdress);
+        const amount = await nature.getBalance(el.walletAdress);
         const _id = el._id;
         const updatedWallet = await WalletModel.findByIdAndUpdate(
           { _id },
