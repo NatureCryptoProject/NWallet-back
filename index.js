@@ -1,4 +1,6 @@
 require("dotenv").config();
+const https = require("https");
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -21,9 +23,17 @@ const start = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    app.listen(PORT, () => {
-      console.log(`Server started on port ${PORT}`);
-    });
+    https
+      .createServer(
+        {
+          key: fs.readFileSync("nproject.charity.key"),
+          cert: fs.readFileSync("nproject.charity.pem"),
+        },
+        app
+      )
+      .listen(PORT, () => {
+        console.log(`Server started on port ${PORT}`);
+      });
   } catch (error) {
     console.log(error);
   }
