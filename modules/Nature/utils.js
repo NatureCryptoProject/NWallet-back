@@ -1,6 +1,7 @@
 const bip39 = require('bip39');
 const tweetnacl = require('tweetnacl');
 const slip10 = require('ed25519-hd-key');
+const axios = require('axios');
 const {
     sha256
 } = require('js-sha256');
@@ -91,17 +92,14 @@ class Crypto {
     }
 }
 
-const Net = require('net');
 
 class Nature {
     /*
      * @param {string} host - Address of the node. Example: `127.0.0.1`
-     * @param {string} host - Address of the node. Example: `8080`
      * @returns {Nature} - object of nature client
      */
-    constructor(host, port) {
+    constructor(host) {
         this.host = host;
-        this.port = port;
         this.requestId = 1;
     }
 
@@ -119,8 +117,7 @@ class Nature {
      */
     fee() {
         return new Promise((resolve, reject) => {
-            this.base_request("fee", [TransactionType.Transaction(null)]).then((fee_resp) => {
-                let data = JSON.parse(fee_resp);
+            this.base_request("fee", [TransactionType.Transaction(null)]).then((data) => {
                 if (data.result !== undefined) {
                     resolve(data.result);
                 } else {
@@ -139,8 +136,7 @@ class Nature {
      */
     getBalance(address) {
         return new Promise((resolve, reject) => {
-            this.base_request("getBalance", [address]).then((bal_resp) => {
-                let data = JSON.parse(bal_resp);
+            this.base_request("getBalance", [address]).then((data) => {
                 if (data.result !== undefined) {
                     resolve(data.result);
                 } else {
@@ -167,11 +163,10 @@ class Nature {
         return new Promise((resolve, reject) => {
             this.base_request("sendTransaction",
                 [transaction.sender, transaction.reciver, transaction.amount,
-                    transaction.signature, transaction.timestamp,
-                    transaction.transaction_type.data
+                transaction.signature, transaction.timestamp,
+                transaction.transaction_type.data
                 ]
-            ).then((resp) => {
-                let data = JSON.parse(resp);
+            ).then((data) => {
                 if (data.result !== undefined) {
                     resolve(data.result);
                 } else {
@@ -189,8 +184,7 @@ class Nature {
      */
     createAccount() {
         return new Promise((resolve, reject) => {
-            this.base_request("createAccount", []).then((resp) => {
-                let data = JSON.parse(resp);
+            this.base_request("createAccount", []).then((data) => {
                 if (data.result !== undefined) {
                     resolve(data.result);
                 } else {
@@ -212,8 +206,7 @@ class Nature {
     */
     getTransactions(address, offset, limit) {
         return new Promise((resolve, reject) => {
-            this.base_request("getTransactions", [address, offset, limit]).then((resp) => {
-                let data = JSON.parse(resp);
+            this.base_request("getTransactions", [address, offset, limit]).then((data) => {
                 if (data.result !== undefined) {
                     resolve(data.result);
                 } else {
@@ -243,24 +236,13 @@ class Nature {
         }
 
         return new Promise((resolve, reject) => {
-            const client = new Net.Socket();
-            client.connect({
-                port: this.port,
-                host: this.host
-            }, function() {
-                client.write(JSON.stringify(data));
-            });
-
-            // The client can also receive data from the server by reading from its socket.
-            client.on('data', function(chunk) {
-                let received_data = chunk.toString();
-                client.end();
-                resolve(received_data);
-            });
-
-            client.on('error', function(err) {
-                reject(err);
-            });
+            axios.get(this.host, { data })
+                .then(function(resp) {
+                    resolve(resp.data);
+                })
+                .catch(function(err) {
+                    reject(err);
+                });
         });
     }
 }

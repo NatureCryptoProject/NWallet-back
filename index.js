@@ -17,6 +17,8 @@ app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use("/api", router);
 app.use(errorMiddlware);
 
+// console.log(fs.readFileSync("nproject.charity.key", { encoding: "utf8" }));
+
 const start = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL, {
@@ -26,8 +28,8 @@ const start = async () => {
     https
       .createServer(
         {
-          key: fs.readFileSync("nproject.charity.key"),
-          cert: fs.readFileSync("nproject.charity.pem"),
+          key: fs.readFileSync("nproject.charity.key", { encoding: "utf8" }),
+          cert: fs.readFileSync("nproject.charity.pem", { encoding: "utf8" }),
         },
         app
       )

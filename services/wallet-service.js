@@ -3,7 +3,7 @@ const UserModel = require("../models/user-model");
 const { Nature, Crypto } = require("../modules/Nature/utils.js");
 const CryptoJS = require("crypto-js");
 
-const serverIP = process.env.serverIP;
+const serverIP = "https://rpc.nproject.charity";
 let nature = new Nature(serverIP, "27777");
 
 class WalletService {
