@@ -25,17 +25,17 @@ const start = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    https
-      .createServer(
-        {
-          key: fs.readFileSync("nproject.charity.key", { encoding: "utf8" }),
-          cert: fs.readFileSync("nproject.charity.pem", { encoding: "utf8" }),
-        },
-        app
-      )
-      .listen(PORT, () => {
-        console.log(`Server started on port ${PORT}`);
-      });
+    https;
+    // .createServer(
+    //   {
+    //     key: fs.readFileSync("nproject.charity.key", { encoding: "utf8" }),
+    //     cert: fs.readFileSync("nproject.charity.pem", { encoding: "utf8" }),
+    //   },
+    //   app
+    // )
+    app.listen(PORT, () => {
+      console.log(`Server started on port ${PORT}`);
+    });
   } catch (error) {
     console.log(error);
   }
