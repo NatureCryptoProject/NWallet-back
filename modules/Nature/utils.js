@@ -265,10 +265,8 @@ class Transaction {
         this.transaction_type = type
         if (timestamp == null) {
             var now = new Date;
-            var utc_timestamp = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(),
-                now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
-            utc_timestamp = Math.round(utc_timestamp / 100);
-            this.timestamp = utc_timestamp;
+            var utc_timestamp = now.getTime()
+            this.timestamp = Math.round(utc_timestamp / 1000);
         } else {
             this.timestamp = timestamp;
         }

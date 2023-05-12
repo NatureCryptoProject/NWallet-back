@@ -4,7 +4,7 @@ const { Nature, Crypto } = require("../modules/Nature/utils.js");
 const CryptoJS = require("crypto-js");
 
 const serverIP = "https://rpc.nproject.charity";
-let nature = new Nature(serverIP, "27777");
+let nature = new Nature(serverIP);
 
 class WalletService {
   async addWallet(walletAdress, mnemonic, owner) {
