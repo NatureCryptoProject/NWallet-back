@@ -34,6 +34,7 @@ class UserService {
     const isPassEquals = await bcrypt.compare(password, user.password);
     if (!isPassEquals) {
       throw ApiError.BadRequest(`Invalid user data`);
+
     }
     const userDto = new UserDto(user); // name, id
     const tokens = tokenService.generateTokens({ ...userDto });
